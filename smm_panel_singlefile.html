@@ -115,7 +115,8 @@
       .hex-figure .fa-headphones,
       .hex-figure .fa-user-plus,
       .hex-figure .fa-users,
-      .hex-figure .fa-music {
+      .hex-figure .fa-music
+      .hex-figure .fa-wave-square {
         font-size: 34px;
       }
     }
@@ -221,7 +222,7 @@
   { id: 'website_usa', name:'Website Traffic from USA', icon:'fa-solid fa-flag-usa', price: 8.49 / 100, unit:1, custom:true },
   { id: 'website_egypt', name:'Website Traffic from Egypt', icon:'fa-solid fa-flag', price: 18.49 / 100, unit:1, custom:true },
   { id: 'mixcloud', name:'Mixcloud Plays / Followers', icon:'fa-solid fa-cloud', price: 19.15, custom:true },
-  { id: 'audiomack', name:'Audiomack Plays / Streams', icon:'fa-brands fa-audio-description', price: 68.17, custom:true },
+  { id: 'audiomack', name:'Audiomack Plays / Streams', icon:'fa-solid fa-wave-square', price: 68.17, custom:true },
   { id: 'threads_followers', name:'Threads Followers', icon:'fa-solid fa-users', price: 174.54, custom:true },
   { id: 'threads_likes', name:'Threads Likes', icon:'fa-brands fa-instagram', price: 41.09, custom:true },
   { id: 'facebook_followers', name:'Facebook Page Followers', icon:'fa-brands fa-facebook', price: 9.50, custom:true },
@@ -343,6 +344,49 @@
 
     // Accessibility: allow escape to close
     window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modal.classList.remove('open'); });
+
+    function createHex(service){
+  const el = document.createElement('div');
+  el.className = 'hex';
+  el.setAttribute('data-id', service.id);
+
+  let iconHTML;
+
+  if(service.icon === 'audiomack'){
+    // Use the SVG directly
+    iconHTML = `
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" 
+           style="width:36px;height:36px;fill:#1DB954">
+        <path d="M12.01 0C5.373 0 0 5.373 0 12.01s5.373 12.01 12.01 12.01 12.01-5.373 12.01-12.01S18.647 0 12.01 0zm-.004 21.962c-5.486 0-9.952-4.466-9.952-9.952 0-5.486 4.466-9.952 9.952-9.952 5.486 0 9.952 4.466 9.952 9.952 0 5.486-4.466 9.952-9.952 9.952z"/>
+      </svg>
+    `;
+  } else {
+    iconHTML = `<i class="${service.icon}" aria-hidden="true"></i>`;
+  }
+
+  el.innerHTML = `
+    <div class="hex-figure">
+      <svg viewBox="0 0 100 100" class="hex-svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g${service.id}" x1="0" x2="1">
+            <stop offset="0" stop-color="#0ea5a0" />
+            <stop offset="1" stop-color="#1fb6ff" />
+          </linearGradient>
+        </defs>
+        <polygon points="50,4 90,25 90,75 50,96 10,75 10,25" fill="none" stroke="url(#g${service.id})" stroke-width="3" />
+      </svg>
+      ${iconHTML}
+    </div>
+    <div class="label">${service.name}</div>
+    ${service.reduced ? '<small>Price reduced 10%</small>' : ''}
+  `;
+  
+  el.addEventListener('click',()=>openModal(service));
+  return el;
+}
+
+
+
 
   </script>
 </body>
