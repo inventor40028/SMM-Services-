@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SMM Services — Quick Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1724; /* dark slate */
+      --card:#0b1220;
+      --accent:#1fb6ff;
+      --muted:#94a3b8;
+      --glass: rgba(255,255,255,0.03);
+      --hex-border: 2px solid rgba(255,255,255,0.06);
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial; margin:0; min-height:100vh; background:linear-gradient(180deg,var(--bg),#071019 120%); color:#e6eef8}
+    .container{max-width:1150px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+    header h1{margin:0;font-size:20px}
+    .intro{color:var(--muted);font-size:14px;margin-bottom:18px}
+
+    /* grid */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:18px}
+
+    /* hexagon card using SVG mask */
+    .hex{background:var(--card);padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;cursor:pointer;transition:transform .20s ease, box-shadow .20s ease}
+    .hex:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    .hex .label{font-size:13px;text-align:center;color:#d7e9ff}
+    .hex small{display:block;font-size:11px;color:var(--muted)}
+
+    /* FIXED: Proper icon centering */
+    .hex-figure {
+      width: 84px;
+      height: 84px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .hex-figure svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    
+    .hex-figure .fa-brands, 
+    .hex-figure .fa, 
+    .hex-figure img {
+      font-size: 36px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Special adjustments for smaller icons */
+    .hex-figure .fa-phone,
+    .hex-figure .fa-mobile-screen-button,
+    .hex-figure .fa-star,
+    .hex-figure .fa-globe,
+    .hex-figure .fa-flag-usa,
+    .hex-figure .fa-flag,
+    .hex-figure .fa-cloud,
+    .hex-figure .fa-headphones,
+    .hex-figure .fa-user-plus,
+    .hex-figure .fa-users,
+    .hex-figure .fa-music {
+      font-size: 40px; /* Larger for better visual balance */
+    }
+
+    /* services list / how it works */
+    .panel{margin-top:22px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px}
+    .steps{display:flex;flex-wrap:wrap;gap:12px}
+    .step{flex:1 1 200px;background:var(--glass);padding:12px;border-radius:8px;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.85));z-index:60}
+    .modal.open{display:flex}
+    .modal-card{width:98%;max-width:560px;background:#071022;border-radius:12px;padding:18px;box-shadow:0 18px 50px rgba(2,6,23,0.8)}
+
+    .row{display:flex;gap:12px;align-items:center}
+    .field{margin-top:12px}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type=number], input[type=text], select{width:100%;padding:10px;border-radius:8px;background:#06101a;border:1px solid rgba(255,255,255,0.03);color:#e6eef8}
+    .price{font-weight:700;font-size:20px;color:var(--accent)}
+
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+    .btn{padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+    .btn.primary{background:var(--accent);color:#062535}
+
+    footer{margin-top:26px;color:var(--muted);font-size:13px}
+
+    @media (max-width:520px){
+      .hex-figure{width:68px;height:68px}
+      .hex-figure .fa-brands, .hex-figure .fa, .hex-figure img{font-size:30px}
+      .hex-figure .fa-phone,
+      .hex-figure .fa-mobile-screen-button,
+      .hex-figure .fa-star,
+      .hex-figure .fa-globe,
+      .hex-figure .fa-flag-usa,
+      .hex-figure .fa-flag,
+      .hex-figure .fa-cloud,
+      .hex-figure .fa-headphones,
+      .hex-figure .fa-user-plus,
+      .hex-figure .fa-users,
+      .hex-figure .fa-music {
+        font-size: 34px;
+      }
+    }
+
+    /* small helper for hex svg stroke */
+    .hex-svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,0.6))}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#123b5a,#0ea5a0);display:grid;place-items:center;font-weight:700">SMM</div>
+      <div>
+        <h1>SMM Services — Quick Panel</h1>
+        <div class="intro">Choose a service. Click an icon to configure quantity, see price, and send your order as a WhatsApp message to <strong>0593707530</strong>.</div>
+      </div>
+    </header>
+
+    <!-- services grid -->
+    <div class="grid" id="servicesGrid">
+      <!-- items inserted by JS -->
+    </div>
+
+    <div class="panel">
+      <h3 style="margin:0 0 10px 0">How it works</h3>
+      <div class="steps">
+        <!-- Copied/Adapted the 4-step flow from GhanaSMM (sign up, deposit, pick service, enjoy results). -->
+        <div class="step"><strong>1.</strong> Sign up or log in. Create an account to track orders and enjoy faster checkout.</div>
+        <div class="step"><strong>2.</strong> Add funds / choose payment method. Deposit funds to your balance or pay per order.</div>
+        <div class="step"><strong>3.</strong> Pick SMM services. Select the platform & package you want — followers, views, subscribers, installs, etc.</div>
+        <div class="step"><strong>4.</strong> Enjoy the results. After delivery you can review performance and request support if needed.</div>
+      </div>
+    </div>
+
+    <footer>Site generated for you. Services and flow inspired by a public SMM panel. (Design and colours are unique.)</footer>
+  </div>
+
+  <!-- modal -->
+  <div class="modal" id="modal">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div id="modalService" style="font-weight:700;font-size:16px"></div>
+          <div id="modalDesc" style="color:var(--muted);font-size:13px;margin-top:4px">Configure quantity and price</div>
+        </div>
+        <div style="text-align:right">
+          <div id="modalPrice" class="price">GH¢0.00</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Total</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="quantity">Quantity / Amount</label>
+        <input id="quantity" type="number" min="1" value="1">
+      </div>
+
+      <div class="field" style="display:flex;gap:12px">
+        <div style="flex:1">
+          <label for="link">Target (Profile / Post / App ID)</label>
+          <input id="link" type="text" placeholder="Paste profile link or target here">
+        </div>
+        <div style="width:140px">
+          <label for="speed">Speed / Options</label>
+          <select id="speed"><option value="standard">Standard</option><option value="drip">Drip-feed</option></select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn secondary" id="closeModal">Cancel</button>
+        <button class="btn primary" id="sendWhatsApp">
+          <i class="fa-brands fa-whatsapp"></i> Send to WhatsApp
+        </button>
+              </div>
+    </div>
+  </div>
+
+  <script>
+    /* Data: services requested by user. Each has icon class (FontAwesome), a base price (USD) which you can edit. Certain services should be reduced by 10% per user instruction. */
+    const reduction10 = new Set([
+      'YouTube Watch Hours',
+      'Telegram Channel Members',
+      'WhatsApp Channel Members',
+      'Facebook 60k Watch Hours',
+      'Followers',
+      'YouTube Subscribers'
+    ]);
+    const services = [
+  { id: 'insta_followers', name: 'Instagram Followers (Old / Instant)', icon: 'fa-brands fa-instagram', price: 14.90 / 1000, unit: 1 }, // price per 1 follower
+  { id: 'yt_watch', name: 'YouTube Watch‑Time (250 h = 1000)', icon: 'fa-brands fa-youtube', price: 205.72 / 1000, unit: 1 }, // price per 1 unit
+  { id: 'tiktok_followers', name: 'TikTok Real Followers', icon: 'fa-brands fa-tiktok', price: 42.18 / 1000, unit: 1 },
+  { id: 'x_followers', name: 'X (Twitter) Followers ‒ High Drop', icon: 'fa-brands fa-x-twitter', price: 31.13 / 1000, unit: 1 },
+  { id: 'soundcloud_plays', name: 'SoundCloud Fast Plays', icon: 'fa-brands fa-soundcloud', price: 21.93 / 10000, unit: 1 }, // per 1 play
+  // Services requiring quote remain custom
+  { id: 'telegram_members', name: 'Telegram Channel Members', icon: 'fa-brands fa-telegram', price: 350.24, custom: true },
+  { id: 'whatsapp_members', name: 'WhatsApp Channel Members', icon: 'fa-brands fa-whatsapp', price: 47.50, custom: true },
+  { id: 'pinterest', name: 'Pinterest Service', icon: 'fa-brands fa-pinterest', price: 199.22, custom: true },
+  { id: 'deezer', name: 'Deezer Plays / Listens', icon: 'fa-solid fa-music', price: 27.97, custom: true },
+  { id: 'linkedin', name: 'LinkedIn Followers / Engagement', icon: 'fa-brands fa-linkedin', price: 395, custom: true },
+  { id: 'snapchat', name: 'Snapchat Service', icon: 'fa-brands fa-snapchat', price: 5481, custom: true },
+  { id: 'app_installs', name:'Mobile App Installs (iOS/Android)', icon:'fa-solid fa-mobile-screen-button', price:5481, custom:true },
+  { id: 'app_reviews', name:'App Rating & Reviews', icon:'fa-solid fa-star', price: 20970, custom:true },
+  { id: 'website_traffic', name:'Website Traffic Worldwide', icon:'fa-solid fa-globe', price: 5.49 / 100, unit:1, custom:true },
+  { id: 'website_usa', name:'Website Traffic from USA', icon:'fa-solid fa-flag-usa', price: 8.49 / 100, unit:1, custom:true },
+  { id: 'website_egypt', name:'Website Traffic from Egypt', icon:'fa-solid fa-flag', price: 18.49 / 100, unit:1, custom:true },
+  { id: 'mixcloud', name:'Mixcloud Plays / Followers', icon:'fa-solid fa-cloud', price: 19.15, custom:true },
+  { id: 'audiomack', name:'Audiomack Plays / Streams', icon:'fa-brands fa-audio-description', price: 68.17, custom:true },
+  { id: 'threads_followers', name:'Threads Followers', icon:'fa-solid fa-users', price: 174.54, custom:true },
+  { id: 'threads_likes', name:'Threads Likes', icon:'fa-brands fa-instagram', price: 41.09, custom:true },
+  { id: 'facebook_followers', name:'Facebook Page Followers', icon:'fa-brands fa-facebook', price: 9.50, custom:true },
+  { id: 'facebook_watch', name:'Facebook Watch Hours', icon:'fa-brands fa-facebook', price:null, custom:true },
+];
+
+    // apply 10% reduction for the listed ones
+    services.forEach(s=>{
+      if(reduction10.has(s.name)){
+        s.originalPrice = s.price;
+        s.price = Math.round((s.price * 0.90 + Number.EPSILON) * 100) / 100; // reduce 10%
+        s.reduced = true;
+      }
+    });
+
+    const grid = document.getElementById('servicesGrid');
+
+    function createHex(service){
+      const el = document.createElement('div');
+      el.className = 'hex';
+      el.setAttribute('data-id', service.id);
+      el.innerHTML = `
+        <div class="hex-figure">
+          <svg viewBox="0 0 100 100" class="hex-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="g${service.id}" x1="0" x2="1">
+                <stop offset="0" stop-color="#0ea5a0" />
+                <stop offset="1" stop-color="#1fb6ff" />
+              </linearGradient>
+            </defs>
+            <polygon points="50,4 90,25 90,75 50,96 10,75 10,25" fill="none" stroke="url(#g${service.id})" stroke-width="3" />
+          </svg>
+          <i class="${service.icon}" aria-hidden="true"></i>
+        </div>
+        <div class="label">${service.name}</div>
+        ${service.reduced? '<small>Price reduced 10%</small>':''}
+      `;
+      el.addEventListener('click',()=>openModal(service));
+      return el;
+    }
+
+    services.forEach(s=>grid.appendChild(createHex(s)));
+
+    // modal logic
+    const modal = document.getElementById('modal');
+    const modalService = document.getElementById('modalService');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalPrice = document.getElementById('modalPrice');
+    const quantityInput = document.getElementById('quantity');
+    const linkInput = document.getElementById('link');
+    const speedSelect = document.getElementById('speed');
+    const closeModalBtn = document.getElementById('closeModal');
+    const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
+
+    let activeService = null;
+
+    function formatUSD(n){ return 'GH¢' + n.toFixed(2); }
+
+    function openModal(service){
+      activeService = service;
+      modalService.textContent = service.name;
+      modalDesc.textContent = activeService.custom
+      ? 'This service requires a quote.'
+      : `Price: ₵${activeService.price.toFixed(2)} per 1 unit`;
+      quantityInput.value = 1;
+      linkInput.value = '';
+      speedSelect.value = 'standard';
+      updateTotal();
+      document.getElementById('modalPrice').textContent = formatUSD(service.price);
+      modal.classList.add('open');
+    }
+
+    function updateTotal(){
+  if(!activeService || activeService.custom) return;
+  const qty = Number(quantityInput.value) || 1;
+  const total = Math.round((activeService.price * qty + Number.EPSILON) * 100) / 100;
+  modalPrice.textContent = formatUSD(total);
+}
+
+    quantityInput.addEventListener('input', updateTotal);
+    speedSelect.addEventListener('change', ()=>{
+      // small demo: if drip selected, add 5% to price
+      if(!activeService) return;
+      const base = activeService.price;
+      if(speedSelect.value === 'drip'){
+        // no change to stored price, only affect total calculation for display
+      }
+      updateTotal();
+    });
+
+    closeModalBtn.addEventListener('click', ()=>{ modal.classList.remove('open'); activeService = null; });
+
+    sendWhatsAppBtn.addEventListener('click', ()=>{
+      if(!activeService) return;
+      const qty = Number(quantityInput.value) || 1;
+      const target = linkInput.value || 'No target provided';
+      const speed = speedSelect.value;
+      let total = Math.round((activeService.price * qty + Number.EPSILON) * 100) / 100;
+      if(speed === 'drip') total = Math.round((total * 1.05 + Number.EPSILON) * 100) / 100; // small surcharge for drip
+
+      // assemble message
+      const msg = `New order:\nService: ${activeService.name}\nQuantity: ${qty}\nTarget: ${target}\nOption: ${speed}\nTotal: GH¢ ${total}\nPlease process.\nThanks.`;
+
+      // user-specified number: 0593707530 — convert to international wa.me form by removing leading 0 and adding 233 (Ghana) if seems Ghanaian.
+      // we'll attempt to create a wa.me link. If number starts with 0 and length 10-11, prefix with 233 and remove the 0.
+      let raw = '0593707530';
+      let waNum = raw;
+      if(raw.startsWith('0')) waNum = '233' + raw.slice(1);
+      const waLink = `https://wa.me/${waNum}?text=` + encodeURIComponent(msg);
+
+      // open wa link
+      window.open(waLink, '_blank');
+      modal.classList.remove('open');
+      activeService = null;
+    });
+
+    // close modal on outside click
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) { modal.classList.remove('open'); activeService = null; } });
+
+    // Accessibility: allow escape to close
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modal.classList.remove('open'); });
+
+  </script>
+</body>
+</html>
